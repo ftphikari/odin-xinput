@@ -173,29 +173,6 @@ GetKeystroke: proc "stdcall" (userIndex : u32, reserved : u32, out : ^KeyStroke)
 GetState: proc "stdcall" (userIndex : u32, state : ^State) -> u32
 SetState: proc "stdcall" (userIndex : u32, state : ^VibrationState) -> u32
 
-get_capabilities :: proc(user: User, only_gamepads := false)  -> (Capabilities, Error) {
-	res := Capabilities{}
-	g: u32 = only_gamepads ? XINPUT_FLAG_GAMEPAD : 0
-	err := GetCapabilities(u32(user), g, &res)
-	return res, Error(err)
-}
-
-get_state :: proc(user: User) -> (State, Error) {
-	res := State{}
-	err := GetState(u32(user), &res)
-	return res, Error(err)
-}
-
-set_state :: proc(user: User, left, right: f32) -> Error {
-	res := VibrationState{}
-	U16_MAX :: 65535
-	res.left_motor_speed = u16(U16_MAX * left)
-	res.right_motor_speed = u16(U16_MAX * right)
-
-	err := SetState(u32(user), &res)
-	return Error(err)
-}
-
 XInputVersion :: enum {
 	NotLoaded,
 	_1_4,
@@ -234,4 +211,27 @@ init :: proc(inital_state := true) -> bool {
 	Enable(b32(inital_state))
 
 	return true
+}
+
+get_capabilities :: proc(user: User, only_gamepads := false)  -> (Capabilities, Error) {
+	res := Capabilities{}
+	g: u32 = only_gamepads ? XINPUT_FLAG_GAMEPAD : 0
+	err := GetCapabilities(u32(user), g, &res)
+	return res, Error(err)
+}
+
+get_state :: proc(user: User) -> (State, Error) {
+	res := State{}
+	err := GetState(u32(user), &res)
+	return res, Error(err)
+}
+
+set_state :: proc(user: User, left, right: f32) -> Error {
+	res := VibrationState{}
+	U16_MAX :: 65535
+	res.left_motor_speed = u16(U16_MAX * left)
+	res.right_motor_speed = u16(U16_MAX * right)
+
+	err := SetState(u32(user), &res)
+	return Error(err)
 }
